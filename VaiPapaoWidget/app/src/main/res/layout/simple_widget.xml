@@ -10,11 +10,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
         <TextView
             android:id="@+id/campeonato_last"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_gravity="center"
@@ -23,8 +26,8 @@
             android:gravity="center_vertical"
             android:paddingLeft="3dip"
             android:paddingRight="3dip"
-            android:textColor="#000000"
-            tools:text="Camp"/>
+            android:textColor="@color/white"
+            />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -32,6 +35,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_weight="2"
             android:gravity="center"
+            android:paddingTop="10dp"
             android:orientation="horizontal">
 
             <LinearLayout
@@ -49,7 +53,6 @@
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:layout_gravity="center_horizontal"
-                    android:src="@mipmap/ic_launcher"
                     android:background="@android:color/transparent" />
 
                 <TextView
@@ -62,8 +65,7 @@
                     android:layout_toStartOf="@+id/imageCategoria_last"
                     android:paddingLeft="3dip"
                     android:paddingRight="3dip"
-                    android:text="AAAA"
-                    android:textColor="#000000" />
+                    android:textColor="@color/white"/>
             </LinearLayout>
 
             <LinearLayout
@@ -81,7 +83,7 @@
                     android:layout_toLeftOf="@+id/X_last"
                     android:layout_toStartOf="@+id/X_last"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:textColor="#000000"
+                    android:textColor="@color/white"
                     tools:text="X" />
 
                 <TextView
@@ -92,7 +94,7 @@
                     android:layout_centerHorizontal="true"
                     android:layout_gravity="center_horizontal"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:textColor="#000000" />
+                    android:textColor="@color/white" />
 
                 <TextView
                     android:id="@+id/placar2_last"
@@ -102,7 +104,7 @@
                     android:layout_toEndOf="@+id/X_last"
                     android:layout_toRightOf="@+id/X_last"
                     android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:textColor="#000000" />
+                    android:textColor="@color/white" />
             </LinearLayout>
 
             <LinearLayout
@@ -129,11 +131,12 @@
                     android:layout_toStartOf="@+id/imageCategoria2_last"
                     android:paddingLeft="3dip"
                     android:paddingRight="3dip"
-                    android:textColor="#000000" />
+                    android:textColor="@color/white"/>
             </LinearLayout>
         </LinearLayout>
 
         <TextView
+            android:paddingTop="10dp"
             android:id="@+id/informacoes_last"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -142,7 +145,7 @@
             android:layout_toRightOf="@+id/text1"
             android:layout_weight="2"
             android:gravity="center_vertical"
-            android:textColor="#000000" />
+            android:textColor="@color/white"/>
     </LinearLayout>
 
 

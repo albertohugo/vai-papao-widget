@@ -5,15 +5,19 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.RemoteViews;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.Random;
 
 import hugo.alberto.vaipapaowidget.Handle.JsonParseHandler;
@@ -68,9 +72,39 @@ public class SimpleWidgetProvider extends AppWidgetProvider {
                 @Override
                 protected void onPostExecute(Void aVoid) {
                     super.onPostExecute(aVoid);
+
+                    remoteViews.setTextViewText(R.id.campeonato_last,campeonato_jogo_last);
+
                     remoteViews.setTextViewText(R.id.time1_last, apelido_mandante_last);
-                    //Picasso.with(contextWidget).load(escudo_oficial_mandante_last).into(R.id.imageCategoria_last);
-                    //remoteViews.setImageViewBitmap(R.id.imageCategoria_last,escudo_oficial_mandante_last );
+                    remoteViews.setTextViewText(R.id.time2_last, apelido_visitante_last);
+                    if(placar_oficial_mandante_last=="null" &&placar_oficial_visitante_last=="null"){
+                        remoteViews.setTextViewText(R.id.placar1_last, "");
+                        remoteViews.setTextViewText(R.id.placar2_last, "");
+                    }
+                    if(placar_oficial_mandante_last=="null" &&placar_oficial_visitante_last=="null"){
+                        remoteViews.setTextViewText(R.id.placar1_last, "");
+                        remoteViews.setTextViewText(R.id.placar2_last, "");
+                    }
+                    else{
+                        remoteViews.setTextViewText(R.id.placar1_last, placar_oficial_mandante_last);
+                        remoteViews.setTextViewText(R.id.placar2_last, placar_oficial_visitante_last);
+                    }
+
+                    if(dataformatada_last==null ){//&&estadio_last=="null"&&hora_last=="null"){
+                        remoteViews.setTextViewText(R.id.informacoes_last,"");
+                        remoteViews.setTextViewText(R.id.X_last,"");
+                    }else{
+                        remoteViews.setTextViewText(R.id.informacoes_last,dataformatada_last + " " + estadio_last + " " + hora_last);
+                        remoteViews.setTextViewText(R.id.X_last," X ");
+                    }
+
+                    Picasso.with(contextWidget)
+                            .load(escudo_oficial_mandante_last)
+                            .into(remoteViews, R.id.imageCategoria_last, new int[] {widgetId});
+                    Picasso.with(contextWidget)
+                            .load(escudo_oficial_visitante_last)
+                            .into(remoteViews, R.id.imageCategoria2_last, new int[] {widgetId});
+
                     Intent intent = new Intent(contextWidget, SimpleWidgetProvider.class);
                     intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
                     intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidget);
