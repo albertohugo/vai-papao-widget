@@ -5,19 +5,20 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RemoteViews;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.Random;
 
 import hugo.alberto.vaipapaowidget.Handle.JsonParseHandler;
@@ -29,6 +30,8 @@ import hugo.alberto.vaipapaowidget.Handle.JsonParseHandler;
 public class SimpleWidgetProvider extends AppWidgetProvider {
     private static final String URL = "http://globoesporte.globo.com/servico/equipe/paysandu/jogos.json";
 
+    private ImageButton imageButton;
+    private LinearLayout layout_widget;
     private TextView campeonato_last;
     private TextView time1_last;
     private TextView time2_last ;
@@ -49,6 +52,18 @@ public class SimpleWidgetProvider extends AppWidgetProvider {
     private String dataformatada_last;
     private String  estadio_last;
     private String hora_last;
+
+    private String campeonato_jogo_current;
+    private String apelido_mandante_current;
+    private String apelido_visitante_current;
+    private String placar_oficial_mandante_current;
+    private String placar_oficial_visitante_current;
+    private String escudo_oficial_mandante_current;
+    private String escudo_oficial_visitante_current;
+    private String dataformatada_current;
+    private String estadio_current;
+    private String hora_current;
+
     private Context contextWidget;
     private RemoteViews remoteViews;
     private int count;
@@ -73,36 +88,32 @@ public class SimpleWidgetProvider extends AppWidgetProvider {
                 protected void onPostExecute(Void aVoid) {
                     super.onPostExecute(aVoid);
 
-                    remoteViews.setTextViewText(R.id.campeonato_last,campeonato_jogo_last);
+                    remoteViews.setTextViewText(R.id.campeonato_last,campeonato_jogo_current);
 
-                    remoteViews.setTextViewText(R.id.time1_last, apelido_mandante_last);
-                    remoteViews.setTextViewText(R.id.time2_last, apelido_visitante_last);
-                    if(placar_oficial_mandante_last=="null" &&placar_oficial_visitante_last=="null"){
-                        remoteViews.setTextViewText(R.id.placar1_last, "");
-                        remoteViews.setTextViewText(R.id.placar2_last, "");
-                    }
-                    if(placar_oficial_mandante_last=="null" &&placar_oficial_visitante_last=="null"){
+                    remoteViews.setTextViewText(R.id.time1_last, apelido_mandante_current);
+                    remoteViews.setTextViewText(R.id.time2_last, apelido_visitante_current);
+                    if(placar_oficial_mandante_current=="null" &&placar_oficial_visitante_current=="null"){
                         remoteViews.setTextViewText(R.id.placar1_last, "");
                         remoteViews.setTextViewText(R.id.placar2_last, "");
                     }
                     else{
-                        remoteViews.setTextViewText(R.id.placar1_last, placar_oficial_mandante_last);
-                        remoteViews.setTextViewText(R.id.placar2_last, placar_oficial_visitante_last);
+                        remoteViews.setTextViewText(R.id.placar1_last, "");
+                        remoteViews.setTextViewText(R.id.placar2_last, "");
                     }
 
-                    if(dataformatada_last==null ){//&&estadio_last=="null"&&hora_last=="null"){
+                    if(dataformatada_current==null ){//&&estadio_last=="null"&&hora_last=="null"){
                         remoteViews.setTextViewText(R.id.informacoes_last,"");
                         remoteViews.setTextViewText(R.id.X_last,"");
                     }else{
-                        remoteViews.setTextViewText(R.id.informacoes_last,dataformatada_last + " " + estadio_last + " " + hora_last);
+                        remoteViews.setTextViewText(R.id.informacoes_last,dataformatada_current + " " + estadio_current + " " + hora_current);
                         remoteViews.setTextViewText(R.id.X_last," X ");
                     }
 
                     Picasso.with(contextWidget)
-                            .load(escudo_oficial_mandante_last)
+                            .load(escudo_oficial_mandante_current)
                             .into(remoteViews, R.id.imageCategoria_last, new int[] {widgetId});
                     Picasso.with(contextWidget)
-                            .load(escudo_oficial_visitante_last)
+                            .load(escudo_oficial_visitante_current)
                             .into(remoteViews, R.id.imageCategoria2_last, new int[] {widgetId});
 
                     Intent intent = new Intent(contextWidget, SimpleWidgetProvider.class);
@@ -110,14 +121,11 @@ public class SimpleWidgetProvider extends AppWidgetProvider {
                     intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidget);
                     PendingIntent pendingIntent = PendingIntent.getBroadcast(contextWidget,
                             0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-                    remoteViews.setOnClickPendingIntent(R.id.imageCategoria_last, pendingIntent);
+                    remoteViews.setOnClickPendingIntent(R.id.imageButton, pendingIntent);
                     appWidgetManagerW.updateAppWidget(widgetId, remoteViews);
                 }
             }.execute();
-
         }
-
-
     }
 
     private void readJsonParse(String json_data) {
@@ -139,6 +147,24 @@ public class SimpleWidgetProvider extends AppWidgetProvider {
                 estadio_last = jogo_last.getString("estadio").toUpperCase();
                 hora_last = jogo_last.getString("hora").toUpperCase();
 
+                JSONObject object = new JSONObject(json_data);
+                JSONArray jsonArray = object.getJSONArray("proximos");
+
+                JSONObject mandante = jsonArray.getJSONObject(0).getJSONObject("mandante");
+                JSONObject visitante = jsonArray.getJSONObject(0).getJSONObject("visitante");
+                JSONObject jogo = jsonArray.getJSONObject(0);
+                apelido_mandante_current = mandante.getString("apelido");
+                apelido_visitante_current = visitante.getString("apelido");
+                placar_oficial_mandante_current = mandante.getString("placar_oficial");
+                placar_oficial_visitante_current = visitante.getString("placar_oficial");
+                escudo_oficial_mandante_current = mandante.getJSONObject("escudo").getString("grande");
+                escudo_oficial_visitante_current = visitante.getJSONObject("escudo").getString("grande");
+                campeonato_jogo_current = jogo.getString("nome_campeonato").toUpperCase();
+                dataformatada_current = jogo.getString("data_formatada").toUpperCase();
+                estadio_current = jogo.getString("estadio").toUpperCase();
+                hora_current = jogo.getString("hora").toUpperCase();
+
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }  } else {
@@ -157,40 +183,11 @@ public class SimpleWidgetProvider extends AppWidgetProvider {
             Log.d("in inBG()", "fetch data" + json_data);
             readJsonParse(json_data);
 
-
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-              FillLastMatch(contextWidget);
         }}
-
-    private void FillLastMatch(Context context) {
-       /* campeonato_last.setText(campeonato_jogo_last);
-        time1_last.setText(apelido_mandante_last);
-        time2_last.setText(apelido_visitante_last);
-        if(placar_oficial_mandante_last=="null" &&placar_oficial_visitante_last=="null"){
-            placar1_last.setText("");
-            placar2_last.setText("");
-        }
-        else{
-            placar1_last.setText(placar_oficial_mandante_last);
-            placar2_last.setText(placar_oficial_visitante_last);
-        }
-
-        if(dataformatada_last==null ){//&&estadio_last=="null"&&hora_last=="null"){
-            informacoes_last.setText("");
-            versus_last.setText("");
-        }
-        else{
-            informacoes_last.setText(dataformatada_last + " " + estadio_last + " " + hora_last);
-            versus_last.setText(" X ");
-        }
-
-
-        Picasso.with(context).load(escudo_oficial_mandante_last).into(imageTime1_last);
-        Picasso.with(context).load(escudo_oficial_visitante_last).into(imageTime2_last);*/
-    }
 }
